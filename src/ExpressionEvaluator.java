@@ -90,42 +90,53 @@ public class ExpressionEvaluator extends Application {
 		strArray = str.split("\\s+");
 
 
-		//this is still not operational. it returns the last digit entered somehow.
+		//this is still not fully operational.
 		for(int i = 0; i < strArray.length; i++) {
-			System.out.println(strArray[i]);
+			//System.out.println(strArray[i]);
 		}
 
 		for(int i = 0; i < strArray.length; i++) {
-
+		//	System.out.println("dataStack = " + dataStack.toString());
+			//System.out.println("operStack = " + operStack.toString());
 
 			if(strArray[i].equals("(")) {
-				System.out.println("its a (");
+				//System.out.println("its a (");
 				operStack.push(strArray[i]);
 			}
 
 			else if(strArray[i].equals(")")) {
-				while(operStack.peek().equals("(") == false) {
+				while(!operStack.peek().equals("(")) {
 					dataStack.push(evaluateTopOfStack());
+
+					
 				}
 				operStack.pop();
+				
 			}
 
 			else if(strArray[i].equals("+") || strArray[i].equals("-") || strArray[i].equals("*") ||strArray[i].equals("/")) {
-				System.out.println("its in here");
+				
+				//System.out.println("its in here");
+				/*
 				if(operStack.isEmpty() || operStack.peek().equals("(")) {
 					operStack.push(strArray[i]);
+					alreadyPushed = true;
 				}
-				while(getPrecedence(operStack.peek()) < getPrecedence(strArray[i]) && dataStack.getSize() >=2) {
-					System.out.println("looped");
-					
+*/
+				while(!shouldPush(strArray[i]) && dataStack.getSize() >=2) {
+					//System.out.println("looped");
+
 					dataStack.push(evaluateTopOfStack());
-					operStack.push(strArray[i]);
-					
+
+
 				}
+				
+					operStack.push(strArray[i]);
+				
 			}
 
 			else {
-				System.out.println("it got here");
+				//System.out.println("it got here");
 				dataStack.push(Integer.parseInt(strArray[i]));
 
 			}
@@ -237,6 +248,25 @@ public class ExpressionEvaluator extends Application {
 		d1 = dataStack.pop();
 		String op = operStack.pop();
 		return calculate(op, d1, d2);
+	}
+
+	private boolean shouldPush(String curr) {
+		if(operStack.isEmpty() || operStack.peek().equals("(")) {
+			return true;
+		}
+		else if(curr.equals("(")) {
+			return true;
+		}
+
+		else if(curr.equals("*") || curr.equals("/")){
+			if(operStack.peek().equals("+") || operStack.peek().equals("-")) {
+				return true;
+			}
+		}
+
+
+		return false;
+
 	}
 	/*
 private int evaluateStack() {
