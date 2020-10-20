@@ -43,14 +43,14 @@ public class ExpressionEvaluator extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		// TODO Auto-generated method stub
-		
+
 		Scene scene = new Scene(main, 400, 400);
 		Label textLabel = new Label("Enter data here");
 		Label output = new Label("output displayed here");
 		Button eval = new Button("Evaluate");
 		eval.setOnAction(e -> output.setText(evaluateExpression(expressionField.getText())));
-		
-		
+
+
 		primaryStage.setTitle("Expression Evaluator");	
 		expressionField = new TextField();
 
@@ -65,13 +65,13 @@ public class ExpressionEvaluator extends Application {
 		primaryStage.show();
 	}
 
-	
+
 	/*
 	private void setAnswerLabel() {
 		answer = evaluateExpression(expressionField.getText());
 		System.out.println(answer);
 	}
-	*/
+	 */
 	/**
 	 * Evaluates the expression by first massaging the string, and then splitting it
 	 * into "tokens" that are either operations or data operands. 
@@ -85,52 +85,93 @@ public class ExpressionEvaluator extends Application {
 	private int d2;
 	protected String evaluateExpression(String str) {
 		str = str.replaceAll("([+-/\\(\\)\\*])", " $1 ");
+		str = str.trim();
 		String orgInput = str;
 		strArray = str.split("\\s+");
-		
 
-//this is still not operational. it returns the last digit entered somehow.
+
+		//this is still not operational. it returns the last digit entered somehow.
 		for(int i = 0; i < strArray.length; i++) {
 			System.out.println(strArray[i]);
 		}
 
 		for(int i = 0; i < strArray.length; i++) {
-			try {
-				dataStack.push(Integer.parseInt(strArray[i]));
-			}catch(Exception e) {
-				if(strArray[i] == "(") {
-					operStack.push(strArray[i]);
-				}
 
-				if(strArray[i] == ")") {
-					while(operStack.peek() != "(") {
-						dataStack.push(evaluateTopOfStack());
-					}
-					operStack.pop();
-				}
 
-				if(strArray[i] == "+" || strArray[i] == "-" || strArray[i] == "*" ||strArray[i] == "/") {
-					if(getPrecedence(operStack.peek()) >= getPrecedence(strArray[i])) {
-						dataStack.push(evaluateTopOfStack());
-
-					}
-					operStack.push(strArray[i]);
-				}
-
+			if(strArray[i].equals("(")) {
+				System.out.println("its a (");
+				operStack.push(strArray[i]);
 			}
 
+			else if(strArray[i].equals(")")) {
+				while(operStack.peek().equals("(") == false) {
+					dataStack.push(evaluateTopOfStack());
+				}
+				operStack.pop();
+			}
+
+			else if(strArray[i].equals("+") || strArray[i].equals("-") || strArray[i].equals("*") ||strArray[i].equals("/")) {
+				System.out.println("its in here");
+				if(operStack.isEmpty() || operStack.peek().equals("(")) {
+					operStack.push(strArray[i]);
+				}
+				while(getPrecedence(operStack.peek()) < getPrecedence(strArray[i]) && dataStack.getSize() >=2) {
+					System.out.println("looped");
+					
+					dataStack.push(evaluateTopOfStack());
+					operStack.push(strArray[i]);
+					
+				}
+			}
+
+			else {
+				System.out.println("it got here");
+				dataStack.push(Integer.parseInt(strArray[i]));
+
+			}
 		}
-		while(operStack.isEmpty() == false) {
+
+
+		while(operStack.isEmpty() == false && dataStack.getSize() >= 2) {
 			dataStack.push(evaluateTopOfStack());
 		}
 		return orgInput + " = " + dataStack.pop();
-		
 	}
 
 
 
 
+
+
 	//failed code 
+
+
+	/*		
+
+	try {
+		dataStack.push(Integer.parseInt(strArray[i]));
+	}catch(Exception e) {
+		if(strArray[i] == "(") {
+			operStack.push(strArray[i]);
+		}
+
+		if(strArray[i] == ")") {
+			while(operStack.peek() != "(") {
+				dataStack.push(evaluateTopOfStack());
+			}
+			operStack.pop();
+		}
+
+		if(strArray[i] == "+" || strArray[i] == "-" || strArray[i] == "*" ||strArray[i] == "/") {
+			while(getPrecedence(operStack.peek()) >= getPrecedence(strArray[i])) {
+				dataStack.push(evaluateTopOfStack());
+
+			}
+			operStack.push(strArray[i]);
+		}
+
+	}
+	 */
 	/*		
 				while(operStack.isEmpty() == false && getPrecedence(operStack.peek()) >= getPrecedence(strArray[i])) {
 					dataStack.push(evaluateTopOfStack());
@@ -180,24 +221,24 @@ public class ExpressionEvaluator extends Application {
 	 */
 
 
-private int getPrecedence(String op) {
-	if(op == "(") {
-		return 3;
+	private int getPrecedence(String op) {
+		if(op.equals("(")) {
+			return 3;
+		}
+		if(op.equals("*") || op.equals("/")) {
+			return 2;
+		}
+		else {
+			return 1;
+		}
 	}
-	if(op == "*" || op =="/") {
-		return 2;
+	private int evaluateTopOfStack() {
+		d2 = dataStack.pop();
+		d1 = dataStack.pop();
+		String op = operStack.pop();
+		return calculate(op, d1, d2);
 	}
-	else {
-		return 1;
-	}
-}
-private int evaluateTopOfStack() {
-	d2 = dataStack.pop();
-	d1 = dataStack.pop();
-	String op = operStack.pop();
-	return calculate(op, d1, d2);
-}
-/*
+	/*
 private int evaluateStack() {
 	int result = 0;
 	while(dataStack.getSize() != 0) {
@@ -213,31 +254,31 @@ private int evaluateStack() {
 	}
 	return result;
 }
-*/
+	 */
 
 
-private int calculate(String operator, int a, int b) {
-	if(operator.equals("+")) {
-		return a+b;
+	private int calculate(String operator, int a, int b) {
+		if(operator.equals("+")) {
+			return a+b;
+		}
+		if(operator.equals("-")) {
+			return a-b;
+		}
+		if(operator.equals("*")) {
+			return a*b;
+		}
+		else{
+			return a/b;
+		}
 	}
-	if(operator.equals("-")) {
-		return a-b;
-	}
-	if(operator.equals("*")) {
-		return a*b;
-	}
-	else{
-		return a/b;
-	}
-}
-/**
- * The main method.
- *
- * @param args the arguments
- */
-public static void main(String[] args) {
-	Application.launch(args);
+	/**
+	 * The main method.
+	 *
+	 * @param args the arguments
+	 */
+	public static void main(String[] args) {
+		Application.launch(args);
 
-}
+	}
 
 }
