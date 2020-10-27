@@ -67,12 +67,7 @@ public class ExpressionEvaluator extends Application {
 	}
 
 
-	/*
-	private void setAnswerLabel() {
-		answer = evaluateExpression(expressionField.getText());
-		System.out.println(answer);
-	}
-	 */
+
 	/**
 	 * Evaluates the expression by first massaging the string, and then splitting it
 	 * into "tokens" that are either operations or data operands. 
@@ -84,7 +79,7 @@ public class ExpressionEvaluator extends Application {
 	private String[] strArray;
 	private double d1;
 	private double d2;
-	
+
 	protected String evaluateExpression(String str) {
 		//implicit muliplication string processor
 		for(int i = 0; i < str.length() - 1; i++) {
@@ -98,84 +93,75 @@ public class ExpressionEvaluator extends Application {
 				str = addChar(str, '*', i+1);
 			}
 		}
-		
-		
+
+
 		str = str.replaceAll("(\\+|-|/|\\(|\\)|\\*)", " $1 ");
 		str = str.trim();
 		String orgInput = str;
 		strArray = str.split("\\s+");
-		
-		
+
+
 		//negation processor
-		/*
-		int countDifference = 0;
-		String[] temp;
-		String tempString;
-		for(int i = 0; i < strArray.length-2; i++) {
-			if(strArray[i].equals("+") || strArray[i].equals("-") || strArray[i].equals("/") || strArray[i].equals("*")) {
-				if(strArray[i+1].equals("-")) {
-					countDifference++;
-				}
-			}
-		}
-		temp = new String[strArray.length-countDifference];
-		
-		for(int i = 0; i < strArray.length-2; i++) {
-			if(strArray[i].equals("+") || strArray[i].equals("-") || strArray[i].equals("/") || strArray[i].equals("*")) {
-				if(strArray[i+1].equals("-")) {
-					tempString = "-"+strArray[i+2];
-					temp[i] = (strArray[i]);
-					temp[i+1] = tempString;
-					i= i+2;
-				}
-				else {
-					temp[i] = strArray[i];
-				}
-			}
-			else{
-				temp[i] = strArray[i];
-			}
-			
-		}
-		strArray = temp;
-		*/
-		
-		/*
+
+
+
+
 		ArrayList<String> temp = new ArrayList<String>();
-		
-		String tempString;
-		for(int i = 0; i < strArray.length-2; i++) {
-			if(strArray[i].equals("+") || strArray[i].equals("-") || strArray[i].equals("/") || strArray[i].equals("*")) {
-				if(strArray[i+1].equals("-")) {
-					tempString = "-"+strArray[i+2];
-					temp.add(strArray[i]);
-					temp.add(tempString);
-					i= i+2;
+
+
+		boolean isNegation = false;
+
+
+
+		if(strArray[0].equals("-")) {
+			isNegation = true;
+		}
+		else {
+			temp.add(strArray[0]);
+		}
+		for(int i = 1; i < strArray.length; i++) {
+			/*
+			if(i == 0 && strArray[i].equals("-")) {
+				temp.add("-" + strArray[i+1]);
+				continue;
+			}
+			 */
+			if(isNegation) {
+				if(isNumber(strArray[i])){
+					temp.add("-" + strArray[i]);
+					isNegation = false;
+					continue;
 				}
 				else {
-					temp.add(strArray[i]);
+					return "Op Error: " + orgInput;
 				}
 			}
-			else if(i == strArray.length - 2) {
-				temp.add(strArray[i]);
-				temp.add(strArray[i+1]);
-				temp.add(strArray[i+2]);
-				break;
+			if(isOperator(strArray[i-1]) && strArray[i].equals("-")){
+				isNegation = true;
+				continue;
 			}
-			else{
-				temp.add(strArray[i]);
-			}
-			
-			
+
+			temp.add(strArray[i]);
+
+
 		}
+
+
+
+
+
 		String[] tempStrArray = new String[temp.size()];
 		for(int i = 0; i < temp.size(); i++) {
 			tempStrArray[i] = temp.get(i);
 		}
 		strArray = tempStrArray;
 		System.out.println(Arrays.toString(strArray));
-		
-*/
+
+
+
+
+
+
 		//op error checking
 		if(strArray[strArray.length - 1].equals("*")|| strArray[strArray.length-1].equals("/")||strArray[strArray.length-1].equals("-")||strArray[strArray.length-1].equals("+")) {
 			System.out.println("op errored 1");
@@ -186,7 +172,7 @@ public class ExpressionEvaluator extends Application {
 				return "Op Error: " + orgInput;
 			}
 		}
-		
+
 		for(int i = 0; i < strArray.length-1; i++) {
 			//System.out.println(strArray[i]);
 			if(i == 0 && !strArray[i].equals("(")) {
@@ -203,7 +189,7 @@ public class ExpressionEvaluator extends Application {
 			}
 
 		}
-		
+
 
 		//paren error checking
 		int parenCount =0;
@@ -224,29 +210,30 @@ public class ExpressionEvaluator extends Application {
 		System.out.println(Arrays.toString(strArray));
 		for(int i = 0; i < strArray.length; i++) {
 			if(strArray[i].contains("f") || strArray[i].contains("d")) {
-				return "Data Error: " + orgInput;
+				return "Data Error: 1" + orgInput;
 			}
 			if(!strArray[i].equals("(") && !strArray[i].equals(")") && !strArray[i].equals("+") && !strArray[i].equals("-") && !strArray[i].equals("*") && !strArray[i].equals("/")) {
 				if(!isNumber(strArray[i])) {
-					return "Data Error: " + orgInput;
+					return "Data Error: 2" + orgInput;
 				}
 			}		
 		}
 		for(int i = 0; i < strArray.length - 1; i++) {
+
 			if(isNumber(strArray[i]) && isNumber(strArray[i+1])){
-				return "Data Error: " + orgInput;
+				return "Data Error: 3" + orgInput;
 			}
 		}
 
-		
-		
-		
-		
-		
-		
-		
-		
-		
+
+
+
+
+
+
+
+
+
 		//evaluation block
 		double evalResult;
 		for(int i = 0; i < strArray.length; i++) {
@@ -299,86 +286,18 @@ public class ExpressionEvaluator extends Application {
 
 
 
-	//failed code 
 
-
-	/*		
-
-	try {
-		dataStack.push(Integer.parseInt(strArray[i]));
-	}catch(Exception e) {
-		if(strArray[i] == "(") {
-			operStack.push(strArray[i]);
+	private boolean isOperator(String s) {
+		if(s.equals("*") || s.equals("/") || s.equals("+") || s.equals("-") || s.equals("(")) {
+			return true;
 		}
-
-		if(strArray[i] == ")") {
-			while(operStack.peek() != "(") {
-				dataStack.push(evaluateTopOfStack());
-			}
-			operStack.pop();
+		else {
+			return false;
 		}
-
-		if(strArray[i] == "+" || strArray[i] == "-" || strArray[i] == "*" ||strArray[i] == "/") {
-			while(getPrecedence(operStack.peek()) >= getPrecedence(strArray[i])) {
-				dataStack.push(evaluateTopOfStack());
-
-			}
-			operStack.push(strArray[i]);
-		}
-
 	}
-	 */
-	/*		
-				while(operStack.isEmpty() == false && getPrecedence(operStack.peek()) >= getPrecedence(strArray[i])) {
-					dataStack.push(evaluateTopOfStack());
-				}
 
-				operStack.push(strArray[i]);
-			}
-		}
-
-		while(operStack.isEmpty() == false) {
-
-		}
-
-
-	 */
-	/*
-		for(int i = 0; i < strArray.length; i++) {
-			if(operStack.isEmpty()) {
-				if(strArray[i] == "+" ||strArray[i] == "-" || strArray[i] == "*" || strArray[i] == "/") {
-					operStack.push(strArray[i]);
-				}
-			}
-			if(strArray[i] == "(") {
-				operStack.push(strArray[i]);
-			}
-			if(strArray[i] == "+" ||strArray[i] == "-" && operStack.peek() != "(") {
-				dataStack.push(evaluateTopOfStack());
-				operStack.push(strArray[i]);
-			}
-			if(strArray[i] == "*" || strArray[i] == "/") {
-				if(operStack.peek() == "*" || operStack.peek() == "/") {
-					dataStack.push(evaluateTopOfStack());
-					operStack.push(strArray[i]);
-				}
-			}
-			if(strArray[i] == ")") {
-				while(operStack.peek() != "(") {
-					dataStack.push(evaluateTopOfStack());
-				}
-			}
-			else {
-				dataStack.push(Integer.parseInt(strArray[i]));
-			}
-		}
-		return str + "=" + dataStack.pop();
-
-	 */
-	
-	
 	private String addChar(String str, char itemToInsert, int position) {
-	    return str.substring(0, position) + itemToInsert + str.substring(position);
+		return str.substring(0, position) + itemToInsert + str.substring(position);
 	}
 	private boolean isNumber(String d) {
 		try {
@@ -425,23 +344,7 @@ public class ExpressionEvaluator extends Application {
 		return false;
 
 	}
-	/*
-private int evaluateStack() {
-	int result = 0;
-	while(dataStack.getSize() != 0) {
-		d2 = dataStack.pop();
-		d1 = dataStack.pop();
-		String op = operStack.pop();
-		dataStack.push(calculate(op, d1, d2));
-		if(dataStack.getSize() ==1) {
-			result = dataStack.pop();
-			break;
-		}
 
-	}
-	return result;
-}
-	 */
 
 
 	private double calculate(String operator, double a, double b) {
@@ -467,5 +370,181 @@ private int evaluateStack() {
 		Application.launch(args);
 
 	}
+
+
+
+	//failed code for negation
+	/*
+	int countDifference = 0;
+	String[] temp;
+	String tempString;
+	for(int i = 0; i < strArray.length-2; i++) {
+		if(strArray[i].equals("+") || strArray[i].equals("-") || strArray[i].equals("/") || strArray[i].equals("*")) {
+			if(strArray[i+1].equals("-")) {
+				countDifference++;
+			}
+		}
+	}
+	temp = new String[strArray.length-countDifference];
+
+	for(int i = 0; i < strArray.length-2; i++) {
+		if(strArray[i].equals("+") || strArray[i].equals("-") || strArray[i].equals("/") || strArray[i].equals("*")) {
+			if(strArray[i+1].equals("-")) {
+				tempString = "-"+strArray[i+2];
+				temp[i] = (strArray[i]);
+				temp[i+1] = tempString;
+				i= i+2;
+			}
+			else {
+				temp[i] = strArray[i];
+			}
+		}
+		else{
+			temp[i] = strArray[i];
+		}
+
+	}
+	strArray = temp;
+
+	 */
+	/*
+	ArrayList<String> temp = new ArrayList<String>();
+
+	String tempString;
+	for(int i = 0; i < strArray.length-2; i++) {
+		if(strArray[i].equals("+") || strArray[i].equals("-") || strArray[i].equals("/") || strArray[i].equals("*")) {
+			if(strArray[i+1].equals("-")) {
+				tempString = "-"+strArray[i+2];
+				temp.add(strArray[i]);
+				temp.add(tempString);
+				i= i+2;
+			}
+			else {
+				temp.add(strArray[i]);
+			}
+		}
+		else if(i == strArray.length - 2) {
+			temp.add(strArray[i]);
+			temp.add(strArray[i+1]);
+			temp.add(strArray[i+2]);
+			break;
+		}
+		else{
+			temp.add(strArray[i]);
+		}
+
+
+	}
+	String[] tempStrArray = new String[temp.size()];
+	for(int i = 0; i < temp.size(); i++) {
+		tempStrArray[i] = temp.get(i);
+	}
+	strArray = tempStrArray;
+	System.out.println(Arrays.toString(strArray));
+
+	 */
+
+
+
+	//failed code for evaluation 
+
+
+	/*		
+
+		try {
+			dataStack.push(Integer.parseInt(strArray[i]));
+		}catch(Exception e) {
+			if(strArray[i] == "(") {
+				operStack.push(strArray[i]);
+			}
+
+			if(strArray[i] == ")") {
+				while(operStack.peek() != "(") {
+					dataStack.push(evaluateTopOfStack());
+				}
+				operStack.pop();
+			}
+
+			if(strArray[i] == "+" || strArray[i] == "-" || strArray[i] == "*" ||strArray[i] == "/") {
+				while(getPrecedence(operStack.peek()) >= getPrecedence(strArray[i])) {
+					dataStack.push(evaluateTopOfStack());
+
+				}
+				operStack.push(strArray[i]);
+			}
+
+		}
+	 */
+	/*		
+					while(operStack.isEmpty() == false && getPrecedence(operStack.peek()) >= getPrecedence(strArray[i])) {
+						dataStack.push(evaluateTopOfStack());
+					}
+
+					operStack.push(strArray[i]);
+				}
+			}
+
+			while(operStack.isEmpty() == false) {
+
+			}
+
+
+	 */
+
+	/*
+			for(int i = 0; i < strArray.length; i++) {
+				if(operStack.isEmpty()) {
+					if(strArray[i] == "+" ||strArray[i] == "-" || strArray[i] == "*" || strArray[i] == "/") {
+						operStack.push(strArray[i]);
+					}
+				}
+				if(strArray[i] == "(") {
+					operStack.push(strArray[i]);
+				}
+				if(strArray[i] == "+" ||strArray[i] == "-" && operStack.peek() != "(") {
+					dataStack.push(evaluateTopOfStack());
+					operStack.push(strArray[i]);
+				}
+				if(strArray[i] == "*" || strArray[i] == "/") {
+					if(operStack.peek() == "*" || operStack.peek() == "/") {
+						dataStack.push(evaluateTopOfStack());
+						operStack.push(strArray[i]);
+					}
+				}
+				if(strArray[i] == ")") {
+					while(operStack.peek() != "(") {
+						dataStack.push(evaluateTopOfStack());
+					}
+				}
+				else {
+					dataStack.push(Integer.parseInt(strArray[i]));
+				}
+			}
+			return str + "=" + dataStack.pop();
+
+	 */
+	/*
+	private int evaluateStack() {
+		int result = 0;
+		while(dataStack.getSize() != 0) {
+			d2 = dataStack.pop();
+			d1 = dataStack.pop();
+			String op = operStack.pop();
+			dataStack.push(calculate(op, d1, d2));
+			if(dataStack.getSize() ==1) {
+				result = dataStack.pop();
+				break;
+			}
+
+		}
+		return result;
+	}
+	 */
+	/*
+	private void setAnswerLabel() {
+		answer = evaluateExpression(expressionField.getText());
+		System.out.println(answer);
+	}
+	 */
 
 }
